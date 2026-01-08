@@ -67,7 +67,9 @@ def create_donut_chart(
             showarrow=False,
             xref="paper",
             yref="paper",
-            align="left"
+            align="left",
+            bgcolor='rgba(240, 240, 240, 0.6)',  # Light gray transparent background
+            borderpad=8
         )] if title else []    )
     
     return fig

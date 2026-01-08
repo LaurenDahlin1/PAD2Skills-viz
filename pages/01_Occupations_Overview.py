@@ -128,6 +128,19 @@ if df.empty:
     st.error("Unable to load data. Please check data files.")
     st.stop()
 
+# Helper function to shorten industry names
+def shorten_industry_name(name, max_length=29):
+    """Shorten industry name to max_length with ellipsis if needed.
+    
+    Reference: 'S Arts Sports and Recreation' = 29 chars
+    """
+    if pd.isna(name):
+        return name
+    name = str(name)
+    if len(name) <= max_length:
+        return name
+    return name[:max_length-1] + "…"
+
 # Initialize session state for chatbot and industry selection
 if 'chatbot_output' not in st.session_state:
     st.session_state.chatbot_output = "Hi, I'm PADdy."
@@ -179,11 +192,14 @@ industry_counts = filtered_df.groupby('industry_cat_label')['esco_id'].nunique()
 industry_counts.columns = ['Industry', 'Job Count']
 industry_counts = industry_counts.sort_values('Job Count', ascending=False)
 
+# Shorten industry names for display
+industry_counts['Industry_Display'] = industry_counts['Industry'].apply(shorten_industry_name)
+
 if not industry_counts.empty:
     fig = create_donut_chart(
         df=industry_counts,
         values_col='Job Count',
-        names_col='Industry',
+        names_col='Industry_Display',
         title="Occupation Counts by Industry",
         hole_size=0.4
     )
@@ -211,7 +227,11 @@ col1, col2 = st.columns([1, 3])
 with col1:
     st.markdown("**Filter by Industry**")
 with col2:
-    industry_options = ["All Industries"] + industry_counts['Industry'].tolist()
+    # Create shortened display names for the dropdown
+    industry_display_map = dict(zip(industry_counts['Industry'], industry_counts['Industry_Display']))
+    industry_options = ["All Industries"] + [industry_display_map.get(ind, ind) for ind in industry_counts['Industry'].tolist()]
+    industry_full_names = ["All Industries"] + industry_counts['Industry'].tolist()
+    
     selected_industry_filter = st.selectbox(
         "Filter by Industry",
         options=industry_options,
@@ -220,10 +240,12 @@ with col2:
         label_visibility="collapsed"
     )
     
-    # Set selected industry based on filter
+    # Map back to full name for filtering
     if selected_industry_filter != "All Industries":
-        st.session_state.selected_industry = selected_industry_filter
-        example_df = filtered_df[filtered_df['industry_cat_label'] == selected_industry_filter]
+        selected_industry_idx = industry_options.index(selected_industry_filter)
+        selected_industry_full = industry_full_names[selected_industry_idx]
+        st.session_state.selected_industry = selected_industry_full
+        example_df = filtered_df[filtered_df['industry_cat_label'] == selected_industry_full]
     else:
         st.session_state.selected_industry = None
         example_df = filtered_df.copy()
@@ -260,6 +282,10 @@ with st.expander("📋 More Job Details+"):
         # Sort and prepare display
         details_df_sorted = details_df.sort_values(['industry_cat_label', 'occupation_esco'])
         
+        # Shorten industry names in the details table
+        details_df_sorted_display = details_df_sorted.copy()
+        details_df_sorted_display['industry_cat_label'] = details_df_sorted_display['industry_cat_label'].apply(shorten_industry_name)
+        
         display_cols = {
             'industry_cat_label': 'Industry',
             'occupation_esco': 'Occupation (ESCO)',
@@ -267,7 +293,7 @@ with st.expander("📋 More Job Details+"):
             'pad_activities': 'Example PAD Activities'
         }
         
-        details_display = details_df_sorted[list(display_cols.keys())].rename(columns=display_cols)
+        details_display = details_df_sorted_display[list(display_cols.keys())].rename(columns=display_cols)
         
         # Pagination
         rows_per_page = 10
