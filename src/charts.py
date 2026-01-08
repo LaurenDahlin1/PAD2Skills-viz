@@ -170,14 +170,18 @@ def create_heatmap(
         colorscale=color_scale,
         hovertemplate='%{y}<br>%{x}<br>' + ('Percentage: %{z}%' if is_percentage else 'Count: %{z}') + '<extra></extra>',
         colorbar=dict(
-            title="%" if is_percentage else "Count",
-            thickness=15,
-            len=0.5,
+            title=dict(
+                text="%" if is_percentage else "Count",
+                side='top'
+            ),
+            thickness=12,
+            len=0.6,
             orientation='h',
             x=0.5,
             xanchor='center',
-            y=-0.15,
-            yanchor='top'
+            y=-0.12,
+            yanchor='top',
+            tickfont=dict(size=10)
         )
     ))
     
