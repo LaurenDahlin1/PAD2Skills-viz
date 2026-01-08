@@ -185,7 +185,7 @@ def create_heatmap(
         ),
         xaxis=dict(
             title=None,
-            side='top',
+            side='bottom',
             tickfont=dict(size=11),
             tickangle=0
         ),
@@ -194,7 +194,7 @@ def create_heatmap(
             tickfont=dict(size=11),
             autorange='reversed'
         ),
-        margin=dict(l=20, r=20, t=80, b=20),
+        margin=dict(l=150, r=20, t=40, b=60),
         height=max(400, len(pivot_data) * 40),
         paper_bgcolor='white',
         plot_bgcolor='white',

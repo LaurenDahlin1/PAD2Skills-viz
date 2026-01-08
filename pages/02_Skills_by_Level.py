@@ -152,6 +152,19 @@ def map_preparation_category(job_zone):
     else:  # 4-5
         return 'High (4-5)'
 
+# Helper function to shorten skill category names
+def shorten_skill_category(name, max_length=19):
+    """Shorten skill category name to max_length with ellipsis if needed.
+    
+    Reference: 'arts and humanities' = 19 chars
+    """
+    if pd.isna(name):
+        return name
+    name = str(name)
+    if len(name) <= max_length:
+        return name
+    return name[:max_length-1] + "…"
+
 df['preparation_category'] = df['onet_job_zone'].apply(map_preparation_category)
 
 # Initialize session state for chatbot and filters
@@ -237,6 +250,9 @@ if not filtered_df.empty:
         ['preparation_category', 'skill_category_label']
     ).size().reset_index(name='count')
     
+    # Shorten skill category names for display
+    heatmap_data['skill_category_display'] = heatmap_data['skill_category_label'].apply(shorten_skill_category)
+    
     # Calculate percentages within each preparation category
     totals = heatmap_data.groupby('preparation_category')['count'].transform('sum')
     heatmap_data['percentage'] = (heatmap_data['count'] / totals * 100).round(1)
@@ -244,7 +260,7 @@ if not filtered_df.empty:
     fig = create_heatmap(
         df=heatmap_data,
         x_col='preparation_category',
-        y_col='skill_category_label',
+        y_col='skill_category_display',
         value_col='percentage',
         title='',
         color_scale='Blues'
