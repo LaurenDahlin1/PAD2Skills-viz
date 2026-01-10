@@ -4,13 +4,19 @@ import streamlit as st
 
 # Mobile-first CSS
 MOBILE_CSS = """
-<style>
-/* Import Google Font Open Sans */
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;600&display=swap');
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans+Mono:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 
-/* Apply Open Sans font */
+<style>
+/* Apply Open Sans font to all elements by default */
 * {
     font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Apply Spline Sans Mono to all headers */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Spline Sans Mono', 'Courier New', monospace;
 }
 
 /* Safe zone for mobile notches and status bars */
