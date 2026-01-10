@@ -53,6 +53,7 @@ def example():
         "position: fixed; bottom: 0; "
         "z-index: 1000; background: white; padding: 0.75rem 1rem; "
         "border-top: 1px solid rgba(49,51,63,0.2);"
+        "padding-bottom: 7px;"
         "max-height: 60vh;"
     )
 
