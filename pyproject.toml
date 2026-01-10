@@ -11,6 +11,8 @@ dependencies = [
     "plotly>=6.5.1",
     "pyarrow>=22.0.0",
     "streamlit>=1.52.2",
+    "streamlit-extras>=0.7.8",
+    "streamlit-float>=0.4.0",
 ]
 
 [project.scripts]
