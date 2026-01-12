@@ -95,8 +95,6 @@ def render_chat_bottom_bar(
         # Float history above the footer
         history.float(
             "position: fixed; "
-            "left: 50%; transform: translateX(-50%); "
-            "width: min(100vw, 700px); "  # adjust 700px to match your app width
             "bottom: 50px; "
             "z-index: 999; "
             "background: white; "
