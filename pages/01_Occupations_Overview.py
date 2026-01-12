@@ -10,6 +10,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 from src.io import load_project_occupation_data
 from src.charts import create_donut_chart
 from src.styles import inject_custom_css
+from src.chat import init_chat_session_state, handle_preset_question, render_chat_bottom_bar
 
 # Page config
 st.set_page_config(
@@ -21,6 +22,9 @@ st.set_page_config(
 
 # Apply mobile-first CSS
 inject_custom_css()
+
+# Initialize chat session state
+init_chat_session_state()
 
 # Load data
 df = load_project_occupation_data()
@@ -264,21 +268,28 @@ The job preparation levels are mapped from O*NET's job zones, shown below.
 
 st.markdown("---")
 
-# Chat input + pills at bottom
+# Suggested question pills
 st.caption("Ask PADdy")
-
-# Pills for suggested questions
 col1, col2 = st.columns(2)
 with col1:
     if st.button("💡 What industries have the most jobs?", use_container_width=True):
-        st.session_state.chatbot_output = "🤖 Based on the data, the top industries are shown in the chart above."
-        st.rerun()
+        handle_preset_question("What industries have the most jobs?")
 with col2:
     if st.button("💡 What other data can I examine?", use_container_width=True):
-        st.session_state.chatbot_output = "🤖 You can explore skills data and training programs in other pages."
-        st.rerun()
+        handle_preset_question("What other data can I examine?")
 
-chat_input = st.chat_input("Ask PADdy about jobs and skills from Project Appraisal Documents.")
-if chat_input:
-    st.session_state.chatbot_output = f"🤖 Thanks for your question: '{chat_input}'. I'm still learning!"
-    st.rerun()
+# Render floating chat bottom bar
+def occupation_chat_callback(user_message: str) -> str:
+    """Generate response for occupation page questions."""
+    lower_msg = user_message.lower()
+    if "industries" in lower_msg and "most" in lower_msg:
+        return "Based on the data, the top industries are shown in the chart above."
+    elif "data" in lower_msg or "examine" in lower_msg:
+        return "You can explore skills data and training programs in other pages."
+    else:
+        return f"Thanks for your question: '{user_message}'. I'm still learning!"
+
+render_chat_bottom_bar(
+    chat_placeholder="Ask PADdy about jobs and skills from Project Appraisal Documents.",
+    on_message_callback=occupation_chat_callback
+)

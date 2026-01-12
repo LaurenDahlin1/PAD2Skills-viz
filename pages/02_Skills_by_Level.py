@@ -10,6 +10,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 from src.io import load_project_occupation_skill_data
 from src.charts import create_heatmap
 from src.styles import inject_custom_css
+from src.chat import init_chat_session_state, handle_preset_question, render_chat_bottom_bar
 
 # Page config
 st.set_page_config(
@@ -21,6 +22,9 @@ st.set_page_config(
 
 # Apply mobile-first CSS
 inject_custom_css()
+
+# Initialize chat session state
+init_chat_session_state()
 
 # Load data
 df = load_project_occupation_skill_data()
@@ -326,21 +330,28 @@ The job preparation levels are mapped from O*NET's job zones, shown below.
 
 st.markdown("---")
 
-# Chat input + pills at bottom
+# Suggested question pills
 st.caption("Ask PADdy")
-
-# Pills for suggested questions
 col1, col2 = st.columns(2)
 with col1:
     if st.button("💡 What skills are suitable for entry-level training programs?", use_container_width=True, key="pill1_skills"):
-        st.session_state.skills_chatbot_output = "🤖 Entry-level roles (Job Zones 1-2) typically require basic communication, digital literacy, and fundamental technical skills."
-        st.rerun()
+        handle_preset_question("What skills are suitable for entry-level training programs?")
 with col2:
     if st.button("💡 How do skills in this industry connect to the PAD objectives?", use_container_width=True, key="pill2_skills"):
-        st.session_state.skills_chatbot_output = "🤖 The skills shown above directly support the project activities and objectives outlined in the PADs."
-        st.rerun()
+        handle_preset_question("How do skills in this industry connect to the PAD objectives?")
 
-chat_input = st.chat_input("Ask PADdy about skills and training pathways.", key="skills_chat")
-if chat_input:
-    st.session_state.skills_chatbot_output = f"🤖 Thanks for your question: '{chat_input}'. I'm still learning!"
-    st.rerun()
+# Render floating chat bottom bar
+def skills_chat_callback(user_message: str) -> str:
+    """Generate response for skills page questions."""
+    lower_msg = user_message.lower()
+    if "entry" in lower_msg or "entry-level" in lower_msg:
+        return "Entry-level roles (Job Zones 1-2) typically require basic communication, digital literacy, and fundamental technical skills."
+    elif "industry" in lower_msg or "pad" in lower_msg or "objectives" in lower_msg:
+        return "The skills shown above directly support the project activities and objectives outlined in the PADs."
+    else:
+        return f"Thanks for your question: '{user_message}'. I'm still learning!"
+
+render_chat_bottom_bar(
+    chat_placeholder="Ask PADdy about skills and training pathways.",
+    on_message_callback=skills_chat_callback
+)
