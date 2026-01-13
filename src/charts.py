@@ -31,7 +31,7 @@ def create_donut_chart(
         labels=df[names_col],
         values=df[values_col],
         hole=hole_size,
-        hovertemplate="<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>",
+        hovertemplate="<b>%{label}</b><br>Occupations: %{value}<br>Percentage: %{percent}<extra></extra>",
         textposition='none',  # Remove text from slices
         textinfo='none',  # No text on slices
         marker=dict(colors=colors, line=dict(color='white', width=2)),
