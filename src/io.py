@@ -10,6 +10,20 @@ PROJECT_OCCUPATION_SKILL_CSV = DATA_DIR / "project_occupation_skill_data.csv"
 TRAINING_PROGRAM_BUNDLES_CSV = DATA_DIR / "training_program_bundles.csv"
 
 
+def clean_industry_label(label: str) -> str:
+    """Remove letter prefix from industry category labels.
+    
+    E.g., 'C Manufacturing' -> 'Manufacturing'
+    """
+    if pd.isna(label):
+        return label
+    label = str(label)
+    # Remove "X " prefix (single letter + space)
+    if len(label) > 2 and label[0].isalpha() and label[1] == ' ':
+        return label[2:]
+    return label
+
+
 @st.cache_data
 def load_project_occupation_data() -> pd.DataFrame:
     """Load and validate project occupation data."""
@@ -26,6 +40,10 @@ def load_project_occupation_data() -> pd.DataFrame:
         st.error(f"Missing required columns: {missing}")
         return pd.DataFrame()
     
+    # Clean industry labels
+    if 'industry_cat_label' in df.columns:
+        df['industry_cat_label'] = df['industry_cat_label'].apply(clean_industry_label)
+    
     return df
 
 
@@ -33,6 +51,11 @@ def load_project_occupation_data() -> pd.DataFrame:
 def load_project_occupation_skill_data() -> pd.DataFrame:
     """Load and validate project occupation skill data."""
     df = pd.read_csv(PROJECT_OCCUPATION_SKILL_CSV)
+    
+    # Clean industry labels
+    if 'industry_cat_label' in df.columns:
+        df['industry_cat_label'] = df['industry_cat_label'].apply(clean_industry_label)
+    
     return df
 
 

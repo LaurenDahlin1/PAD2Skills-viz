@@ -130,11 +130,6 @@ def render_chat_bottom_bar(
                 prompt = st.chat_input(chat_placeholder, key="chat_input")
             with col_right:
                 st.write("")  # Empty to keep alignment
-            #col_left = st.container()
-            #prompt = st.chat_input(chat_placeholder, key="chat_input")
-            # This is needed so the submit button is visible when hosted on community cloud
-            # Very annoying! -_-
-            #st.markdown("<div style='margin-bottom: 100px;'></div>", unsafe_allow_html=True)
 
         if prompt:
             # Always show chat history after submit

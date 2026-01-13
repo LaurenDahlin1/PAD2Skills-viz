@@ -11,6 +11,7 @@ from src.io import load_project_occupation_skill_data
 from src.charts import create_heatmap
 from src.styles import inject_custom_css
 from src.chat import init_chat_session_state, handle_preset_question, render_chat_bottom_bar
+from src.components import render_job_preparation_expander, render_floating_project_selector, render_project_info_button
 
 # Page config
 st.set_page_config(
@@ -73,37 +74,27 @@ def shorten_skill_category(name, max_length=19):
 df['preparation_category'] = df['onet_job_zone'].apply(map_preparation_category)
 
 # Initialize session state for chatbot and filters
-if 'skills_chatbot_output' not in st.session_state:
-    st.session_state.skills_chatbot_output = "Hi, I'm PADdy."
 if 'selected_industry_skills' not in st.session_state:
     st.session_state.selected_industry_skills = None
 if 'show_top_five_only' not in st.session_state:
     st.session_state.show_top_five_only = False
 
-# Chatbot output at top in styled box
-st.markdown(
-    f'<div class="chatbot-box"><span class="chatbot-emoji">🤖</span>{st.session_state.skills_chatbot_output}</div>',
-    unsafe_allow_html=True
-)
+# Render floating project selector (using same session key as page 01)
+selected_project = render_floating_project_selector(df, session_key="selected_project")
 
-# Main visual - Heatmap
+# Add spacing to prevent floating bar from blocking content
+st.markdown("<div style='margin-top: 100px;'></div>", unsafe_allow_html=True)
+
+# Main visual - Heatmap 
 st.subheader("Which skills map to entry-level and advanced training pathways?")
 
-# Global filters
-col1, col2 = st.columns(2)
+# Show project info button if specific project selected
+render_project_info_button(df, selected_project)
+
+# Industry filter
+col1, col2 = st.columns([1, 1])
 
 with col1:
-    st.markdown("**Select Project**")
-    project_options = ["ALL"] + sorted(df['project_title'].unique().tolist())
-    selected_project = st.selectbox(
-        "Select Project",
-        options=project_options,
-        index=0,
-        key="project_selector_skills",
-        label_visibility="collapsed"
-    )
-
-with col2:
     st.markdown("**Select Industry**")
     # Filter out NaN values and convert to strings before sorting
     industries = df['industry_cat_label'].dropna().unique()
@@ -114,6 +105,15 @@ with col2:
         index=0,
         key="industry_selector_skills",
         label_visibility="collapsed"
+    )
+
+with col2:
+    # Toggle for top 5 skills
+    st.markdown("**Filter Options**")
+    show_top_five = st.checkbox(
+        "Use only top-5 skills per occupation",
+        value=st.session_state.show_top_five_only,
+        key="top_five_toggle"
     )
 
 # Filter data based on selections
@@ -128,13 +128,6 @@ if selected_industry != "All Industries":
 else:
     st.session_state.selected_industry_skills = None
 
-# Toggle for top 5 skills
-st.markdown("**Filter Options**")
-show_top_five = st.checkbox(
-    "Show only top-5 skills per occupation",
-    value=st.session_state.show_top_five_only,
-    key="top_five_toggle"
-)
 st.session_state.show_top_five_only = show_top_five
 
 if show_top_five:
@@ -210,10 +203,13 @@ else:
 st.markdown("---")
 
 # Details table in expander
-with st.expander("📋 More Skill Details+"):
+with st.expander("📋 More Skill Details"):
     if not filtered_df.empty:
+        # Make unique on occupation and skill to avoid duplicates when multiple projects share same occupation-skill
+        details_df_unique = filtered_df.drop_duplicates(subset=['occupation_esco', 'skill_label'])
+        
         # Sort and prepare display
-        details_df_sorted = filtered_df.sort_values([
+        details_df_sorted = details_df_unique.sort_values([
             'preparation_category', 'skill_category_label', 'occupation_esco'
         ])
         
@@ -307,26 +303,7 @@ with st.expander("📋 More Skill Details+"):
         st.info("No skill details available. Try changing your filters.")
 
 # About Job Preparation expander
-with st.expander("📚 About Job Preparation+"):
-    st.markdown("""
-The job preparation levels are mapped from O*NET's job zones, shown below.
-
-**Low Preparation**
-
-- **Job Zone One: Little or No Preparation Needed**: Little or no previous work-related skill, knowledge, or experience is needed for these occupations. For example, a person can become a waiter or waitress even if he/she has never worked before. Some of these occupations may require a secondary education. Employees in these occupations need anywhere from a few days to a few months of training. Usually, an experienced worker could show you how to do the job.
-
-- **Job Zone Two: Some Preparation Needed**: Some previous work-related skill, knowledge, or experience is usually needed. For example, a teller would benefit from experience working directly with the public. These occupations usually require secondary education. Employees in these occupations need anywhere from a few months to one year of working with experienced employees. A recognized apprenticeship program may be associated with these occupations.
-
-**Medium Preparation**
-
-- **Job Zone Three: Medium Preparation Needed**: Previous work-related skill, knowledge, or experience is required for these occupations. For example, an electrician must have completed three or four years of apprenticeship or several years of vocational training, and often must have passed a licensing exam, in order to perform the job. Most occupations in this zone require training in vocational schools, related on-the-job experience, or an associate's degree. Employees in these occupations usually need one or two years of training involving both on-the-job experience and informal training with experienced workers. A recognized apprenticeship program may be associated with these occupations.
-
-**High Preparation**
-
-- **Job Zone Four: Considerable Preparation Needed**: A considerable amount of work-related skill, knowledge, or experience is needed for these occupations. For example, an accountant must complete four years of college and work for several years in accounting to be considered qualified. Most of these occupations require a post-secondary degree, but some do not. Employees in these occupations usually need several years of work-related experience, on-the-job training, and/or vocational training.
-
-- **Job Zone Five: Extensive Preparation Needed**: Extensive skill, knowledge, and experience are needed for these occupations. Many require more than five years of experience. For example, surgeons must complete four years of college and an additional five to seven years of specialized medical training to be able to do their job. Most of these occupations require graduate school. For example, they may require a master's degree, and some require a Ph.D., M.D., or J.D. (law degree). Employees may need some on-the-job training, but most of these occupations assume that the person will already have the required skills, knowledge, work-related experience, and/or training.
-    """)
+render_job_preparation_expander()
 
 st.markdown("---")
 
