@@ -74,7 +74,7 @@ if st.session_state.selected_project == "ALL":
 else:
     # Truncate long project names for the label
     proj_name = st.session_state.selected_project
-    expander_label = proj_name if len(proj_name) <= 100 else proj_name[:97] + "..."
+    expander_label = proj_name if len(proj_name) <= 65 else proj_name[:62] + "..."
     # expander_label = proj_name
 
 top_industry_bar = st.container()
