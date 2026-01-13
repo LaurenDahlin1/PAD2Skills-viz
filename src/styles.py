@@ -42,8 +42,8 @@ p, div, span {
     font-weight: 400;
 }
 
-/* Style for top menu */
-[data-testid="stExpander"]:first-of-type summary p {
+/* Style for top menu - target expander inside float container */
+div[id^="float-this-component-"] [data-testid="stExpander"] summary p {
     font-size: 1.25rem; 
     font-weight: 600;
     letter-spacing: -0.01em;
