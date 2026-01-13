@@ -148,3 +148,61 @@ The job preparation levels are mapped from O*NET's job zones, shown below.
 
 - **Job Zone Five: Extensive Preparation Needed**: Extensive skill, knowledge, and experience are needed for these occupations. Many require more than five years of experience. For example, surgeons must complete four years of college and an additional five to seven years of specialized medical training to be able to do their job. Most of these occupations require graduate school. For example, they may require a master's degree, and some require a Ph.D., M.D., or J.D. (law degree). Employees may need some on-the-job training, but most of these occupations assume that the person will already have the required skills, knowledge, work-related experience, and/or training.
     """)
+
+
+def render_next_page_navigation(
+    page_title: str = "Explore Skills by Job Level",
+    page_icon: str = "🎓",
+    page_number: str = "02",
+    description: str = "See which skills are needed for entry-level vs. advanced positions"
+) -> None:
+    """Render a navigation card to guide users to the next page.
+    
+    Args:
+        page_title: Title of the next page
+        page_icon: Emoji icon for the page
+        page_number: Page number/identifier (e.g., "02")
+        description: Brief description of what users will find
+    """
+    st.markdown("---")
+    
+    # Create a visually appealing navigation card
+    col1, col2 = st.columns([5, 1])
+    
+    with col1:
+        st.markdown(f"### {page_icon} {page_title}")
+        st.caption(description)
+    
+    with col2:
+        # Next arrow button that navigates to next page
+        if st.button("Next →", key="next_arrow_nav_button", use_container_width=True, type="secondary"):
+            st.switch_page(f"pages/{page_number}_Skills_by_Level.py")
+
+
+def render_previous_page_navigation(
+    page_title: str = "Back to Occupations",
+    page_icon: str = "💼",
+    page_number: str = "01",
+    description: str = "Return to the occupations overview"
+) -> None:
+    """Render a navigation card to guide users to the previous page.
+    
+    Args:
+        page_title: Title of the previous page
+        page_icon: Emoji icon for the page
+        page_number: Page number/identifier (e.g., "01")
+        description: Brief description of what users will find
+    """
+    st.markdown("---")
+    
+    # Create a visually appealing navigation card
+    col1, col2 = st.columns([1, 5])
+    
+    with col1:
+        # Back arrow button that navigates to previous page
+        if st.button("← Back", key="back_arrow_nav_button", use_container_width=True, type="secondary"):
+            st.switch_page(f"pages/{page_number}_Occupations_Overview.py")
+    
+    with col2:
+        st.markdown(f"### {page_icon} {page_title}")
+        st.caption(description)

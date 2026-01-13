@@ -11,7 +11,7 @@ from src.io import load_project_occupation_skill_data
 from src.charts import create_heatmap
 from src.styles import inject_custom_css
 from src.chat import init_chat_session_state, handle_preset_question, render_chat_bottom_bar
-from src.components import render_job_preparation_expander, render_floating_project_selector, render_project_info_button
+from src.components import render_job_preparation_expander, render_floating_project_selector, render_project_info_button, render_previous_page_navigation
 
 # Page config
 st.set_page_config(
@@ -316,6 +316,13 @@ with col1:
 with col2:
     if st.button("💡 How do skills in this industry connect to the PAD objectives?", use_container_width=True, key="pill2_skills"):
         handle_preset_question("How do skills in this industry connect to the PAD objectives?")
+
+
+# Navigation to previous page
+render_previous_page_navigation()
+
+# Add spacing to prevent floating bar from blocking content
+st.markdown("<div style='margin-top: 50px;'></div>", unsafe_allow_html=True)
 
 # Render floating chat bottom bar
 def skills_chat_callback(user_message: str) -> str:

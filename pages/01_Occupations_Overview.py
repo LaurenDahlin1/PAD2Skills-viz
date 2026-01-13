@@ -11,7 +11,7 @@ from src.io import load_project_occupation_data
 from src.charts import create_donut_chart
 from src.styles import inject_custom_css
 from src.chat import init_chat_session_state, handle_preset_question, render_chat_bottom_bar
-from src.components import render_job_preparation_expander, render_floating_project_selector, render_project_info_button
+from src.components import render_job_preparation_expander, render_floating_project_selector, render_project_info_button, render_next_page_navigation
 
 # Page config
 st.set_page_config(
@@ -253,6 +253,13 @@ with col2:
     if st.button("💡 What other data can I examine?", use_container_width=True):
         handle_preset_question("What other data can I examine?")
 
+# Navigation to next page
+render_next_page_navigation()
+
+# Add spacing to prevent floating bar from blocking content
+st.markdown("<div style='margin-top: 50px;'></div>", unsafe_allow_html=True)
+
+
 # Render floating chat bottom bar
 def occupation_chat_callback(user_message: str) -> str:
     """Generate response for occupation page questions."""
@@ -268,3 +275,4 @@ render_chat_bottom_bar(
     chat_placeholder="Ask PADdy about jobs and skills from Project Appraisal Documents.",
     on_message_callback=occupation_chat_callback
 )
+
