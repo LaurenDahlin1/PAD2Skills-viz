@@ -42,6 +42,16 @@ p, div, span {
     font-weight: 400;
 }
 
+/* Style for top menu */
+[data-testid="stExpander"]:first-of-type summary p {
+    font-size: 1.25rem; 
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #f1f4f8;
+    vertical-align: middle;
+    justify-content: center;
+}
+
 div[data-testid="stVerticalBlock"] > div { width: 100%; }
 
 /* Chatbot output box styling */

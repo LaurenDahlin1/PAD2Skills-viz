@@ -3,6 +3,8 @@ import streamlit as st
 import pandas as pd
 import sys
 from pathlib import Path
+from streamlit_float import float_init
+from st_keyup import st_keyup
 
 # Add src to path
 sys.path.append(str(Path(__file__).parent.parent))
@@ -46,31 +48,106 @@ def shorten_industry_name(name, max_length=29):
         return name
     return name[:max_length-1] + "…"
 
-# Initialize session state for chatbot and industry selection
-if 'chatbot_output' not in st.session_state:
-    st.session_state.chatbot_output = "Hi, I'm PADdy."
+# Initialize session state for selected industry and project
 if 'selected_industry' not in st.session_state:
     st.session_state.selected_industry = None
+if 'selected_project' not in st.session_state:
+    st.session_state.selected_project = "ALL"
+if 'project_search' not in st.session_state:
+    st.session_state.project_search = ""
 
-# Chatbot output at top in styled box
-st.markdown(f'<div class="chatbot-box"><span class="chatbot-emoji">🤖</span>{st.session_state.chatbot_output}</div>', unsafe_allow_html=True)
+# Floating project selector
+float_init()
+
+# Get project options
+project_options = ["ALL"] + sorted(df['project_title'].unique().tolist())
+
+# Helper function to select a project
+def select_project(project_name: str):
+    """Update selected project in session state."""
+    st.session_state.selected_project = project_name
+    st.session_state.project_search = ""  # Clear search after selection
+
+# Dynamic expander label based on selection
+if st.session_state.selected_project == "ALL":
+    expander_label = "Select a Project"
+else:
+    # Truncate long project names for the label
+    proj_name = st.session_state.selected_project
+    # expander_label = proj_name if len(proj_name) <= 40 else proj_name[:37] + "..."
+    expander_label = proj_name
+
+top_industry_bar = st.container()
+with top_industry_bar:
+    with st.expander(expander_label, expanded=False):
+        # Search box for filtering projects
+        search_query = st_keyup(
+            "Search projects",
+            key="project_search_input",
+            placeholder="Search projects...",
+            label_visibility="collapsed"
+        )
+        
+        # Filter projects based on search
+        if search_query:
+            filtered_projects = [p for p in project_options if search_query.lower() in p.lower()]
+        else:
+            filtered_projects = project_options
+        
+        # Show "ALL" button first if it matches search
+        if "ALL" in filtered_projects:
+            is_selected = st.session_state.selected_project == "ALL"
+            btn_type = "primary" if is_selected else "secondary"
+            if st.button(
+                "Show All Projects" + (" ✓" if is_selected else ""),
+                key="btn_all",
+                use_container_width=True,
+                type=btn_type
+            ):
+                select_project("ALL")
+                st.rerun()
+        
+        # Show project buttons (excluding ALL)
+        project_list = [p for p in filtered_projects if p != "ALL"]
+        
+        if not project_list and search_query:
+            st.caption("No projects match your search.")
+        else:
+            # Show projects in a scrollable container
+            scroll_container = st.container(height=300)
+            with scroll_container:
+                for project in project_list:
+                    is_selected = st.session_state.selected_project == project
+                    btn_type = "primary" if is_selected else "secondary"
+                    # Truncate display name for button
+                    # display_name = project if len(project) <= 45 else project[:42] + "..."
+                    display_name = project
+                    if st.button(
+                        display_name + (" ✓" if is_selected else ""),
+                        key=f"btn_{project}",
+                        use_container_width=True,
+                        type=btn_type
+                    ):
+                        select_project(project)
+                        st.rerun()
+
+# Use session state for selected project
+selected_project = st.session_state.selected_project
+
+top_industry_bar.float(
+    "position: fixed; top: 0;"
+    "z-index: 998; background: white; "
+    "padding: 0.75rem 1rem; "
+    "padding-top: 75px; "
+    "border-bottom: 1px solid rgba(49,51,63,0.2); "
+    "background-color: #08273f;"
+)
+
+# Add spacing to prevent floating bar from blocking content
+st.markdown("<div style='margin-top: 100px;'></div>", unsafe_allow_html=True)
 
 # Main visual - Donut chart
 st.subheader("What jobs are needed to deliver energy projects?")
-
-# Project filter under the heading
-col1, col2 = st.columns([1, 3])
-with col1:
-    st.markdown("**Select Project**")
-with col2:
-    project_options = ["ALL"] + sorted(df['project_title'].unique().tolist())
-    selected_project = st.selectbox(
-        "Select Project",
-        options=project_options,
-        index=0,
-        key="project_selector",
-        label_visibility="collapsed"
-    )
 
 # Show project info button if specific project selected
 if selected_project != "ALL":

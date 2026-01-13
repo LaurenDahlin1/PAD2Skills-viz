@@ -1095,6 +1095,7 @@ dependencies = [
     { name = "streamlit" },
     { name = "streamlit-extras" },
     { name = "streamlit-float" },
+    { name = "streamlit-keyup" },
 ]
 
 [package.metadata]
@@ -1107,6 +1108,7 @@ requires-dist = [
     { name = "streamlit", specifier = ">=1.52.2" },
     { name = "streamlit-extras", specifier = ">=0.7.8" },
     { name = "streamlit-float", specifier = ">=0.4.0" },
+    { name = "streamlit-keyup", specifier = ">=0.3.0" },
 ]
 
 [[package]]

@@ -3,7 +3,7 @@ base = "light"
 backgroundColor = "#FFFFFF"
 secondaryBackgroundColor = "#FFFFFF"
 textColor = "#111111"
-primaryColor = "#0F62FE"
+primaryColor = "#406f8f"
 font = "'Open Sans':https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap"
 headingFont = "'EB Garamond':https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap"
 

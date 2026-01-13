@@ -13,6 +13,7 @@ dependencies = [
     "streamlit>=1.52.2",
     "streamlit-extras>=0.7.8",
     "streamlit-float>=0.4.0",
+    "streamlit-keyup>=0.3.0",
 ]
 
 [project.scripts]
