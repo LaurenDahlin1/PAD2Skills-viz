@@ -108,7 +108,7 @@ def render_chat_bottom_bar(
     with footer:
         # Toggle appears only after first message (matches your earlier behavior)
         if has_any_messages:
-            col_left, col_right = st.columns([8, 1])
+            col_left, col_right = st.columns([6, 1])
             with col_left:
                 prompt = st.chat_input(chat_placeholder, key="chat_input")
             with col_right:
@@ -129,7 +129,7 @@ def render_chat_bottom_bar(
             prompt = st.chat_input(chat_placeholder, key="chat_input")
             # This is needed so the submit button is visible when hosted on community cloud
             # Very annoying! -_-
-            st.markdown("<div style='margin-bottom: 50px;'></div>", unsafe_allow_html=True)
+            #st.markdown("<div style='margin-bottom: 100px;'></div>", unsafe_allow_html=True)
 
         if prompt:
             # Always show chat history after submit
