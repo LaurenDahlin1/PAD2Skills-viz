@@ -1,4 +1,5 @@
 """Reusable UI components for the PAD2Skills dashboard."""
+
 import streamlit as st
 import pandas as pd
 from streamlit_float import float_init
