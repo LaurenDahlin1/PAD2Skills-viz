@@ -70,12 +70,12 @@ def select_project(project_name: str):
 
 # Dynamic expander label based on selection
 if st.session_state.selected_project == "ALL":
-    expander_label = "Select a Project"
+    expander_label = "Select a Project (Showing All)"
 else:
     # Truncate long project names for the label
     proj_name = st.session_state.selected_project
-    # expander_label = proj_name if len(proj_name) <= 40 else proj_name[:37] + "..."
-    expander_label = proj_name
+    expander_label = proj_name if len(proj_name) <= 100 else proj_name[:97] + "..."
+    # expander_label = proj_name
 
 top_industry_bar = st.container()
 with top_industry_bar:
@@ -144,7 +144,7 @@ top_industry_bar.float(
 )
 
 # Add spacing to prevent floating bar from blocking content
-st.markdown("<div style='margin-top: 80px;'></div>", unsafe_allow_html=True)
+st.markdown("<div style='margin-top: 100px;'></div>", unsafe_allow_html=True)
 
 # Main visual - Donut chart
 st.subheader("What jobs are needed to deliver energy projects?")
