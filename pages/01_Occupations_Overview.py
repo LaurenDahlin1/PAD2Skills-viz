@@ -144,7 +144,7 @@ top_industry_bar.float(
 )
 
 # Add spacing to prevent floating bar from blocking content
-st.markdown("<div style='margin-top: 100px;'></div>", unsafe_allow_html=True)
+st.markdown("<div style='margin-top: 80px;'></div>", unsafe_allow_html=True)
 
 # Main visual - Donut chart
 st.subheader("What jobs are needed to deliver energy projects?")
