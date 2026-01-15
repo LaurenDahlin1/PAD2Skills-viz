@@ -9,9 +9,26 @@ This dashboard provides an interactive interface to explore:
 - **Skills** mapped to entry-level and advanced training pathways
 - Connections between projects, industries, and workforce requirements
 
+### To-Do
+
+1. The dashboard pulls data from CSV files from Google Drive (see Data Source). Update the dashboard to make dynamic DB queries.
+2. The chatbot is currently not active (though example responses are shown). Create embedding model, vector database, and chat endpoint. Connect to dashboard.
+
 ## Data Source
 
 The data for this dashboard is generated from World Bank Project Appraisal Documents (PADs) using the [PAD2Skills](https://github.com/LaurenDahlin1/PAD2Skills) pipeline, which extracts occupations and skills from project documents.
+
+### Visualization Data Files
+
+- **[project_occupation_data_viz.csv](https://drive.google.com/file/d/1PwEvz3mAVBhbO5YYfIL4N2cqLo6qeIc6/view?usp=sharing)** - Subset of occupation data optimized for visualization
+- **[project_occupation_skill_data_viz.csv](https://drive.google.com/file/d/1ZjPBBrUxDTrbtsVZON1HTJhUhd9-r1cy/view?usp=drive_link)** - Subset of occupation-skill mappings optimized for visualization
+
+### Full Data Files
+
+These files contain the complete dataset with additional columns not used in the visualization. These additional columns will be included in the chatbot.
+
+- **[project_occupation_data.csv](https://drive.google.com/file/d/1E75FbEXs7kKKQ3tGaf_TdKATZ91JX76C/view?usp=sharing)** - Full occupation data with all columns
+- **[project_occupation_skill_data.csv](https://drive.google.com/file/d/1BWf_MiyleiHPIVPq-p7qLxbaUcryJWfZ/view?usp=sharing)** - Full occupation-skill mappings (large file!)
 
 ## Setup
 
