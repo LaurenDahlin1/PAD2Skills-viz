@@ -57,7 +57,7 @@ selected_project = render_floating_project_selector(df, session_key="selected_pr
 # Add spacing to prevent floating bar from blocking content
 #st.markdown("<div style='margin-top: 25px;'></div>", unsafe_allow_html=True)
 st.markdown("#")
-st.markdown("###")
+#st.markdown("###")
 
 # Main visual - Donut chart
 st.subheader("What jobs are needed to deliver energy projects?")
