@@ -1,6 +1,8 @@
 """Shared CSS styles for mobile-first Streamlit UI."""
 
 import streamlit as st
+import base64
+from pathlib import Path
 
 # Mobile-first CSS
 MOBILE_CSS = """
@@ -112,6 +114,58 @@ div[data-testid="stChatInput"] {
 """
 
 
+def set_background_image(image_path: str):
+    """
+    Set a background image for the Streamlit app.
+    
+    Args:
+        image_path: Path to the background image (relative to project root)
+    """
+    # Get absolute path to image
+    project_root = Path(__file__).parent.parent
+    img_file = project_root / image_path
+    
+    if not img_file.exists():
+        return
+    
+    # Determine image extension
+    main_bg_ext = img_file.suffix.lstrip('.')
+    
+    # Read and encode image
+    with open(img_file, "rb") as f:
+        img_data = base64.b64encode(f.read()).decode()
+    
+    # Inject background CSS
+    bg_css = f"""
+    <style>
+    .stApp {{
+        background: url(data:image/{main_bg_ext};base64,{img_data});
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }}
+    
+    /* Make main container transparent */
+    .block-container {{
+        background-color: transparent !important;
+    }}
+    
+    /* Make sidebar transparent */
+    [data-testid="stSidebar"] {{
+        background-color: transparent !important;
+    }}
+    
+    [data-testid="stSidebarNav"] {{
+        background-color: transparent !important;
+    }}
+    </style>
+    """
+    st.markdown(bg_css, unsafe_allow_html=True)
+
+
 def inject_custom_css():
     """Inject custom CSS into the Streamlit app."""
     st.markdown(MOBILE_CSS, unsafe_allow_html=True)
+    # Set background image for all pages
+    set_background_image("img/skills_web_background.png")
