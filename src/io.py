@@ -2,10 +2,12 @@
 import streamlit as st
 import pandas as pd
 from pathlib import Path
+import io
+import requests
 
-# Google Drive direct download URLs
-PROJECT_OCCUPATION_CSV_URL = "https://drive.google.com/uc?export=download&id=10a3OvZQs83fsP30Rz3xgNQ_MQqQlxiiz"
-PROJECT_OCCUPATION_SKILL_CSV_URL = "https://drive.google.com/uc?export=download&id=1mKwe0CO9UJ4vEwcn9F5iEfISCR9gw6Lf"
+# Google Drive file IDs
+PROJECT_OCCUPATION_FILE_ID = "1PwEvz3mAVBhbO5YYfIL4N2cqLo6qeIc6"
+PROJECT_OCCUPATION_SKILL_FILE_ID = "1ZjPBBrUxDTrbtsVZON1HTJhUhd9-r1cy"
 
 # Legacy local paths (kept for reference)
 DATA_DIR = Path(__file__).parent.parent / "data"
@@ -26,10 +28,49 @@ def clean_industry_label(label: str) -> str:
     return label
 
 
+def download_google_drive_file(file_id: str) -> pd.DataFrame:
+    """Download a CSV from Google Drive, handling large file confirmations.
+    
+    Google Drive requires a confirmation token for files that trigger virus scan warnings.
+    """
+    # Try direct download first
+    url = f"https://drive.google.com/uc?export=download&id={file_id}"
+    
+    try:
+        # First attempt - works for small files
+        df = pd.read_csv(url)
+        return df
+    except Exception as e:
+        # If that fails, try with requests to handle confirmation
+        try:
+            session = requests.Session()
+            response = session.get(url, stream=True)
+            
+            # Check if we need to confirm (large file)
+            if 'confirm' in response.text or 'virus' in response.text.lower():
+                # Extract confirmation token
+                for key, value in response.cookies.items():
+                    if key.startswith('download_warning'):
+                        url = f"https://drive.google.com/uc?export=download&id={file_id}&confirm={value}"
+                        break
+                response = session.get(url)
+            
+            # Read the CSV content
+            df = pd.read_csv(io.StringIO(response.text))
+            return df
+        except Exception as e2:
+            st.error(f"Failed to load file {file_id}: {str(e2)}")
+            st.error("Please verify the file is shared publicly (Anyone with the link can view)")
+            return pd.DataFrame()
+
+
 @st.cache_data
 def load_project_occupation_data() -> pd.DataFrame:
     """Load and validate project occupation data from Google Drive."""
-    df = pd.read_csv(PROJECT_OCCUPATION_CSV_URL)
+    df = download_google_drive_file(PROJECT_OCCUPATION_FILE_ID)
+    
+    if df.empty:
+        return df
     
     # Validate required columns
     required_cols = [
@@ -52,7 +93,10 @@ def load_project_occupation_data() -> pd.DataFrame:
 @st.cache_data
 def load_project_occupation_skill_data() -> pd.DataFrame:
     """Load and validate project occupation skill data from Google Drive."""
-    df = pd.read_csv(PROJECT_OCCUPATION_SKILL_CSV_URL)
+    df = download_google_drive_file(PROJECT_OCCUPATION_SKILL_FILE_ID)
+    
+    if df.empty:
+        return df
     
     # Clean industry labels
     if 'industry_cat_label' in df.columns:

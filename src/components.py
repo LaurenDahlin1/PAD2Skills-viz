@@ -116,7 +116,9 @@ def render_project_info_button(df: pd.DataFrame, selected_project: str):
         selected_project: Name of the selected project or "ALL"
     """
     if selected_project != "ALL":
-        project_summary = df[df['project_title'] == selected_project]['short_summary'].iloc[0]
+        # Get first non-missing short_summary for the selected project
+        project_rows = df[df['project_title'] == selected_project]
+        project_summary = project_rows['short_summary'].dropna().iloc[0] if not project_rows['short_summary'].dropna().empty else "No summary available."
         
         @st.dialog("Project Details")
         def show_project_info():
