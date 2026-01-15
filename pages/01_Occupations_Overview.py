@@ -110,6 +110,21 @@ if not industry_counts.empty:
         use_container_width=True,
         key="industry_donut"
     )
+    
+    # Key indicators
+    st.markdown("<br>", unsafe_allow_html=True)
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        total_occupations = filtered_df['esco_id'].nunique()
+        st.markdown(f"<h2 style='text-align: center;'>{total_occupations}</h2>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center;'>Occupations Found</p>", unsafe_allow_html=True)
+    
+    with col2:
+        low_prep_count = filtered_df[filtered_df['onet_job_zone'].isin([1.0, 2.0])]['esco_id'].nunique()
+        st.markdown(f"<h2 style='text-align: center;'>{low_prep_count}</h2>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center;'>Low-Preparation Occupations</p>", unsafe_allow_html=True)
+    
 else:
     st.info("No occupations found for the selected project.")
 

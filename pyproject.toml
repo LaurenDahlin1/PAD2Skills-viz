@@ -10,6 +10,7 @@ dependencies = [
     "pandas>=2.3.3",
     "plotly>=6.5.1",
     "pyarrow>=22.0.0",
+    "requests>=2.32.5",
     "streamlit>=1.52.2",
     "streamlit-extras>=0.7.8",
     "streamlit-float>=0.4.0",
