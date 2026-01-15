@@ -135,13 +135,26 @@ def set_background_image(image_url: str):
         background-color: transparent !important;
     }}
     
-    /* Make sidebar transparent */
-    [data-testid="stSidebar"] {{
-        background-color: transparent !important;
+    /* Make sidebar transparent on desktop only */
+    @media (min-width: 769px) {{
+        [data-testid="stSidebar"] {{
+            background-color: transparent !important;
+        }}
+        
+        [data-testid="stSidebarNav"] {{
+            background-color: transparent !important;
+        }}
     }}
     
-    [data-testid="stSidebarNav"] {{
-        background-color: transparent !important;
+    /* Make sidebar white on mobile */
+    @media (max-width: 768px) {{
+        [data-testid="stSidebar"] {{
+            background-color: white !important;
+        }}
+        
+        [data-testid="stSidebarNav"] {{
+            background-color: white !important;
+        }}
     }}
     </style>
     """
