@@ -174,10 +174,33 @@ st.markdown("---")
 
 # Details table in expander
 with st.expander("📋 More Job Details"):
-    if st.session_state.selected_industry:
-        details_df = filtered_df[filtered_df['industry_cat_label'] == st.session_state.selected_industry]
-    else:
-        details_df = filtered_df.copy()
+    # Industry filter for details table
+    col1, col2 = st.columns([1, 3])
+    with col1:
+        st.markdown("**Filter by Industry**")
+    with col2:
+        # Create shortened display names for the dropdown
+        details_industry_display_map = dict(zip(industry_counts['Industry'], industry_counts['Industry_Display']))
+        details_industry_options = ["All Industries"] + [details_industry_display_map.get(ind, ind) for ind in industry_counts['Industry'].tolist()]
+        details_industry_full_names = ["All Industries"] + industry_counts['Industry'].tolist()
+        
+        selected_details_industry = st.selectbox(
+            "Filter details by Industry",
+            options=details_industry_options,
+            index=0,
+            key="details_industry_filter",
+            label_visibility="collapsed"
+        )
+        
+        # Map back to full name for filtering
+        if selected_details_industry != "All Industries":
+            selected_details_idx = details_industry_options.index(selected_details_industry)
+            selected_details_full = details_industry_full_names[selected_details_idx]
+            details_df = filtered_df[filtered_df['industry_cat_label'] == selected_details_full]
+        else:
+            details_df = filtered_df.copy()
+    
+    #st.markdown("##")
     
     if not details_df.empty:
         # Sort and prepare display
