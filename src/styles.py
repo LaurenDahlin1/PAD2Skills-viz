@@ -1,8 +1,6 @@
 """Shared CSS styles for mobile-first Streamlit UI."""
 
 import streamlit as st
-import base64
-from pathlib import Path
 
 # Mobile-first CSS
 MOBILE_CSS = """
@@ -114,32 +112,18 @@ div[data-testid="stChatInput"] {
 """
 
 
-def set_background_image(image_path: str):
+def set_background_image(image_url: str):
     """
     Set a background image for the Streamlit app.
     
     Args:
-        image_path: Path to the background image (relative to project root)
+        image_url: URL of the background image
     """
-    # Get absolute path to image
-    project_root = Path(__file__).parent.parent
-    img_file = project_root / image_path
-    
-    if not img_file.exists():
-        return
-    
-    # Determine image extension
-    main_bg_ext = img_file.suffix.lstrip('.')
-    
-    # Read and encode image
-    with open(img_file, "rb") as f:
-        img_data = base64.b64encode(f.read()).decode()
-    
     # Inject background CSS
     bg_css = f"""
     <style>
     .stApp {{
-        background: url(data:image/{main_bg_ext};base64,{img_data});
+        background: url({image_url});
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -168,4 +152,4 @@ def inject_custom_css():
     """Inject custom CSS into the Streamlit app."""
     st.markdown(MOBILE_CSS, unsafe_allow_html=True)
     # Set background image for all pages
-    set_background_image("img/skills_web_background.png")
+    set_background_image("https://laurendahlin.com/wp-content/uploads/2026/01/skills_web_background.png")
