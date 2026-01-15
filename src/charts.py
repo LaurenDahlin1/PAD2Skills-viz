@@ -171,7 +171,7 @@ def create_heatmap(
         hovertemplate='%{y}<br>%{x}<br>' + ('Percentage: %{z}%' if is_percentage else 'Count: %{z}') + '<extra></extra>',
         colorbar=dict(
             title=dict(
-                text="%" if is_percentage else "Count",
+                text="Concentration of Skills (%)" if is_percentage else "Count",
                 side='top'
             ),
             thickness=12,
@@ -193,7 +193,10 @@ def create_heatmap(
             font=dict(size=16, color='#2a2a2a')
         ),
         xaxis=dict(
-            title=None,
+            title=dict(
+                text="Job Preparation Level",
+                font=dict(size=12, color='#2a2a2a')
+            ),
             side='top',
             tickfont=dict(size=11),
             tickangle=0
