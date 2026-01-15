@@ -3,10 +3,12 @@ import streamlit as st
 import pandas as pd
 from pathlib import Path
 
-# Centralized file paths
+# Google Drive direct download URLs
+PROJECT_OCCUPATION_CSV_URL = "https://drive.google.com/uc?export=download&id=10a3OvZQs83fsP30Rz3xgNQ_MQqQlxiiz"
+PROJECT_OCCUPATION_SKILL_CSV_URL = "https://drive.google.com/uc?export=download&id=1mKwe0CO9UJ4vEwcn9F5iEfISCR9gw6Lf"
+
+# Legacy local paths (kept for reference)
 DATA_DIR = Path(__file__).parent.parent / "data"
-PROJECT_OCCUPATION_CSV = DATA_DIR / "project_occupation_data.csv"
-PROJECT_OCCUPATION_SKILL_CSV = DATA_DIR / "project_occupation_skill_data.csv"
 TRAINING_PROGRAM_BUNDLES_CSV = DATA_DIR / "training_program_bundles.csv"
 
 
@@ -26,8 +28,8 @@ def clean_industry_label(label: str) -> str:
 
 @st.cache_data
 def load_project_occupation_data() -> pd.DataFrame:
-    """Load and validate project occupation data."""
-    df = pd.read_csv(PROJECT_OCCUPATION_CSV)
+    """Load and validate project occupation data from Google Drive."""
+    df = pd.read_csv(PROJECT_OCCUPATION_CSV_URL)
     
     # Validate required columns
     required_cols = [
@@ -49,8 +51,8 @@ def load_project_occupation_data() -> pd.DataFrame:
 
 @st.cache_data
 def load_project_occupation_skill_data() -> pd.DataFrame:
-    """Load and validate project occupation skill data."""
-    df = pd.read_csv(PROJECT_OCCUPATION_SKILL_CSV)
+    """Load and validate project occupation skill data from Google Drive."""
+    df = pd.read_csv(PROJECT_OCCUPATION_SKILL_CSV_URL)
     
     # Clean industry labels
     if 'industry_cat_label' in df.columns:
