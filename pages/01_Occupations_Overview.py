@@ -55,7 +55,8 @@ if 'selected_industry' not in st.session_state:
 selected_project = render_floating_project_selector(df, session_key="selected_project")
 
 # Add spacing to prevent floating bar from blocking content
-st.markdown("<div style='margin-top: 100px;'></div>", unsafe_allow_html=True)
+#st.markdown("<div style='margin-top: 25px;'></div>", unsafe_allow_html=True)
+st.markdown("#")
 
 # Main visual - Donut chart
 st.subheader("What jobs are needed to deliver energy projects?")
@@ -244,7 +245,7 @@ render_job_preparation_expander()
 st.markdown("---")
 
 # Suggested question pills
-st.caption("Ask PADdy")
+st.markdown("### Ask PADdy (Chat)")
 col1, col2 = st.columns(2)
 with col1:
     if st.button("💡 What industries have the most jobs?", use_container_width=True):

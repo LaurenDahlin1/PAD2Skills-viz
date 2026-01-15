@@ -308,7 +308,7 @@ render_job_preparation_expander()
 st.markdown("---")
 
 # Suggested question pills
-st.caption("Ask PADdy")
+st.markdown("### Ask PADdy (Chat)")
 col1, col2 = st.columns(2)
 with col1:
     if st.button("💡 What skills are suitable for entry-level training programs?", use_container_width=True, key="pill1_skills"):
