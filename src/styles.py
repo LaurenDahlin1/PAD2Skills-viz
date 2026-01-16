@@ -42,14 +42,34 @@ p, div, span {
     font-weight: 400;
 }
 
-/* Style for top menu - target expander inside float container */
-div[id^="float-this-component-"] [data-testid="stExpander"] summary p {
+/* Style for top menu - collapsed state (dark background) */
+div[id^="float-this-component-"] [data-testid="stExpander"] details:not([open]) summary p {
     font-size: 1.25rem; 
     font-weight: 600;
     letter-spacing: -0.01em;
-    color: #f1f4f8;
+    color: #f1f4f8 !important;  /* Light text for dark background */
     vertical-align: middle;
     justify-content: center;
+}
+
+/* Style for top menu - expanded state (white background content) */
+div[id^="float-this-component-"] [data-testid="stExpander"] details[open] summary p {
+    font-size: 1.25rem; 
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #1a1a1a !important;  /* Dark text when expanded */
+    vertical-align: middle;
+    justify-content: center;
+}
+
+div[id^="float-this-component-"] button:enabled p{
+    color: #1a1a1a !important;
+}
+
+div[id^="float-this-component-"] button:hover p,
+div[id^="float-this-component-"] button:hover span,
+div[id^="float-this-component-"] button:hover {
+    color: white !important;
 }
 
 div[data-testid="stVerticalBlock"] > div { width: 100%; }
