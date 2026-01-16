@@ -8,7 +8,7 @@ MOBILE_CSS = """
 
 /* Safe zone for mobile notches and status bars */
 .block-container { 
-    padding-top: max(100px, env(safe-area-inset-top)); 
+    padding-top: 100px; 
     padding-bottom: 3rem;
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
