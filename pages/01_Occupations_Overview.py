@@ -8,7 +8,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 from src.io import load_project_occupation_data
-from src.charts import create_donut_chart
+from src.charts import create_donut_chart, create_horizontal_bar_chart
 from src.styles import inject_custom_css
 from src.chat import init_chat_session_state, handle_preset_question, render_chat_bottom_bar
 from src.components import render_job_preparation_expander, render_floating_project_selector, render_project_info_button, render_next_page_navigation
@@ -51,6 +51,10 @@ def shorten_industry_name(name, max_length=29):
 if 'selected_industry' not in st.session_state:
     st.session_state.selected_industry = None
 
+# Initialize session state for show all industries toggle
+if 'show_all_industries' not in st.session_state:
+    st.session_state.show_all_industries = False
+
 # Render floating project selector
 selected_project = render_floating_project_selector(df, session_key="selected_project")
 
@@ -81,35 +85,49 @@ industry_counts = industry_counts.sort_values('Job Count', ascending=False)
 # Add rank and create display names with rank instead of letter prefix
 industry_counts['Rank'] = range(1, len(industry_counts) + 1)
 
-def format_industry_with_rank(row, max_length=29):
-    """Format industry name with rank number and shorten if needed."""
+def format_industry_with_rank(row):
+    """Format industry name with rank number."""
     industry = row['Industry']
     rank = row['Rank']
     
-    # Add rank number
+    # Add rank number (no truncation - wrapping handled by chart)
     industry_with_rank = f"{rank} {industry}"
-    
-    # Shorten if needed
-    if len(industry_with_rank) > max_length:
-        return industry_with_rank[:max_length-1] + "…"
     return industry_with_rank
 
 industry_counts['Industry_Display'] = industry_counts.apply(format_industry_with_rank, axis=1)
 
 if not industry_counts.empty:
-    fig = create_donut_chart(
-        df=industry_counts,
-        values_col='Job Count',
-        names_col='Industry_Display',
-        title="Occupation Counts by Industry",
-        hole_size=0.4
+    # Slice data based on show_all_industries toggle
+    if st.session_state.show_all_industries:
+        display_data = industry_counts.copy()
+        chart_title = "All Industries by Number of Occupations"
+    else:
+        display_data = industry_counts.head(5).copy()
+        chart_title = "Top 5 Industries by Number of Occupations"
+    
+    # Reverse order for horizontal bar chart (highest at top)
+    display_data = display_data.iloc[::-1]
+    
+    fig = create_horizontal_bar_chart(
+        df=display_data,
+        x_col='Job Count',
+        y_col='Industry_Display',
+        title=chart_title
     )
     
     st.plotly_chart(
         fig,
         use_container_width=True,
-        key="industry_donut"
+        key="industry_bar_chart"
     )
+    
+    # Add centered Show more / Show less button
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        button_label = "Show less" if st.session_state.show_all_industries else "Show more"
+        if st.button(button_label, key="toggle_industries"):
+            st.session_state.show_all_industries = not st.session_state.show_all_industries
+            st.rerun()
     
     # Key indicators
     st.markdown("<br>", unsafe_allow_html=True)

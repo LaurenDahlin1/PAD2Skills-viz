@@ -83,7 +83,7 @@ def create_horizontal_bar_chart(
     color_col: str = None
 ) -> go.Figure:
     """
-    Create a mobile-friendly horizontal bar chart.
+    Create a mobile-friendly horizontal bar chart with wrapped y-axis labels.
     
     Args:
         df: DataFrame with data
@@ -95,25 +95,35 @@ def create_horizontal_bar_chart(
     Returns:
         Plotly Figure
     """
-    if color_col:
-        fig = px.bar(
-            df,
-            x=x_col,
-            y=y_col,
-            orientation='h',
-            title=title,
-            color=color_col,
-            text=x_col
-        )
-    else:
-        fig = px.bar(
-            df,
-            x=x_col,
-            y=y_col,
-            orientation='h',
-            title=title,
-            text=x_col
-        )
+    # Wrap y-axis labels every three words
+    def wrap_label(text: str, words_per_line: int = 3, max_words: int = 6) -> str:
+        """Insert <br> tag every N words in the label, truncate after max_words."""
+        words = str(text).split()
+        
+        # Truncate if too long
+        if len(words) > max_words:
+            words = words[:max_words]
+            words[-1] = words[-1] + '…'
+        
+        wrapped_lines = []
+        for i in range(0, len(words), words_per_line):
+            wrapped_lines.append(' '.join(words[i:i+words_per_line]))
+        return '<br>'.join(wrapped_lines)
+    
+    # Create a copy and wrap labels
+    df_plot = df.copy()
+    df_plot[y_col + '_wrapped'] = df_plot[y_col].apply(wrap_label)
+    
+    # Create horizontal bar chart with custom blue color
+    fig = go.Figure(data=[go.Bar(
+        x=df_plot[x_col],
+        y=df_plot[y_col + '_wrapped'],
+        orientation='h',
+        marker=dict(color='#08273f'),
+        text=df_plot[x_col],
+        textposition='outside',
+        hovertemplate="<b>%{y}</b><br>Occupations: %{x}<extra></extra>"
+    )])
     
     fig.update_layout(
         title=dict(text=title, x=0.5, xanchor='center', font=dict(size=16)),
@@ -121,8 +131,14 @@ def create_horizontal_bar_chart(
         yaxis_title=None,
         showlegend=False,
         margin=dict(l=20, r=20, t=50, b=20),
-        height=max(300, len(df) * 40),
+        height=max(300, len(df) * 50),  # More height per bar for wrapped labels
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
     )
+    
+    # Remove grid lines
+    fig.update_xaxes(showgrid=False, zeroline=False)
+    fig.update_yaxes(showgrid=False, zeroline=False)
     
     fig.update_traces(textposition='outside')
     
